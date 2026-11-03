@@ -1,5 +1,5 @@
 
-GUI = False
+GUI = True
 
 if GUI:
     import gui

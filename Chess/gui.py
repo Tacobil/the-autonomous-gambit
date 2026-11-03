@@ -12,7 +12,7 @@ SQ_COLORS = (pygame.Color("white"), pygame.Color("gray"), pygame.Color("green"))
 def load_images():
     pieces = ["bR", "bN", "bB", "bQ", "bK", "bP", "wR", "wN", "wB", "wQ", "wK", "wP"]
     for piece in pieces:
-        image = pygame.image.load("Chess/images/" + piece + ".png")
+        image = pygame.image.load("./images/" + piece + ".png")
         IMAGES[piece] = pygame.transform.scale(image, (SQ_SIZE,SQ_SIZE))
 
 def run():
