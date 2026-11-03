@@ -4,7 +4,7 @@ Class responsible for:
     * Valid moves
     * Move log
 '''
-
+#new chess
 class GameState:
     def __init__(self):
         self.board = [
