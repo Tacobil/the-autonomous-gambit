@@ -27,7 +27,8 @@ def run():
     sq_selected = ()
     player_clicks = []
 
-    possible_moves = gs.get_legal_moves()
+    valid_moves = gs.get_legal_moves()
+    move_made = False
     
     while running:
         # check events
@@ -48,18 +49,23 @@ def run():
 
                 if len(player_clicks) == 2: # move piece
                     move = ChessEngine.Move(player_clicks[0], player_clicks[1], gs.board)
-                    if move in possible_moves:
-                        gs.make_move(move)
-                        possible_moves = gs.get_legal_moves()
-                    sq_selected = ()
-                    player_clicks = []
+                    for i in range(len(valid_moves)):
+                        if move == valid_moves[i]:
+                            gs.make_move(move, True)
+                            move_made = True
+                            sq_selected = ()
+                            player_clicks = []
+                    if not move_made:
+                        player_clicks = [sq_selected]
 
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_z:
                     gs.undo_move()
-                    possible_moves = gs.get_legal_moves()
-
-
+                    move_made = True
+        
+        if move_made:
+            move_made = False
+            valid_moves = gs.get_legal_moves()
 
         draw_game_state(screen, gs, sq_selected)
         clock.tick()

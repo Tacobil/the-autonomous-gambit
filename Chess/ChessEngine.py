@@ -4,6 +4,7 @@ Class responsible for:
     * Valid moves
     * Move log
 '''
+
 #new chess
 class GameState:
     def __init__(self):
@@ -28,14 +29,26 @@ class GameState:
 
         return "  "
 
-    def make_move(self, move, ):
+    def make_move(self, move, player_move=False):
         self.board[move.start_row][move.start_col] = "--"
-        self.board[move.end_row][move.end_col] = move.moved_piece
         self.move_log.append(move)
         self.white_to_move = not self.white_to_move
 
-        if move.moved_piece[1] == "P":
-            print("moved a pawn")
+        if move.is_pawn_promotion and player_move:
+            piece = input("What piece do you want? ")
+            self.board[move.end_row][move.end_col] = move.moved_piece[0] + piece
+        else:
+            self.board[move.end_row][move.end_col] = move.moved_piece
+            
+    
+    def undo_move(self):
+        if len(self.move_log) != 0:
+            last_move = self.move_log.pop()
+
+            self.board[last_move.end_row][last_move.end_col] = last_move.captured_piece
+            self.board[last_move.start_row][last_move.start_col] = last_move.moved_piece
+            
+            self.white_to_move = not self.white_to_move
 
     def get_legal_moves(self):
         moves = []
@@ -141,18 +154,11 @@ class GameState:
     def get_king_moves(self, r, c, moves):
         for i in range(r-1, r+1+1):
             for j in range(c-1, c+1+1):
+                if i == 0 and j == 0: continue
+
                 p = self.get_piece(i, j)
                 if p == "--" or (p[0] == "b" and self.white_to_move) or (p[0] == "w" and not self.white_to_move):
                     moves.append(Move((r, c), (i, j), self.board))
-
-    def undo_move(self):
-        if len(self.move_log) != 0:
-            last_move = self.move_log.pop()
-
-            self.board[last_move.end_row][last_move.end_col] = last_move.captured_piece
-            self.board[last_move.start_row][last_move.start_col] = last_move.moved_piece
-            
-            self.white_to_move = not self.white_to_move
 
 
 class Move:
@@ -170,8 +176,8 @@ class Move:
         self.end_col = end_sq[1]
         self.moved_piece = board[self.start_row][self.start_col]
         self.captured_piece = board[self.end_row][self.end_col]
-        
         self.move_id = self.start_col * 1000 + self.start_row * 100 + self.end_col * 10 + self.end_row
+        self.is_pawn_promotion = (self.moved_piece == "wP" and self.end_row == 0) or (self.moved_piece == "bP" and self.end_row == 7)
 
     def __eq__(self, other):
         if isinstance(other, Move):
